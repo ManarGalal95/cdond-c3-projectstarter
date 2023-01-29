@@ -33,9 +33,6 @@ commands:
             fi
             
 jobs:
-
-########################## CI Pipeline ##########################
-
   build-frontend:
     docker:
       - image: circleci/node:13.8.0
@@ -100,7 +97,6 @@ jobs:
       # Restore from cache
       # Your job code here
 
-########################## CD Pipeline ##########################
   deploy-infrastructure:
     docker:
       # Docker image here that supports AWS CLI
