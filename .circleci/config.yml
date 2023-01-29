@@ -34,8 +34,9 @@ version: 2.1
             
 jobs:
 
-########################## CI Pipeline ##########################
+########################## CI Pipeline(Stages) ##########################
 
+  # Build Frontend Stage #
   build-frontend:
     docker:
       - image: cimg/node:13.8.0
@@ -45,7 +46,7 @@ jobs:
       - restore_cache:
           keys: [frontend-deps]
       - run:
-          name: Build front-end
+          name: Front-end Build 
           command: |
             cd frontend
             npm install
@@ -55,6 +56,7 @@ jobs:
           paths: [frontend/node_modules]
           key: frontend-deps
 
+  # Build Backend Stage #
   build-backend:
     docker:
       - image: cimg/node:13.8.0
@@ -64,7 +66,7 @@ jobs:
       - restore_cache:
           keys: [backend-deps]
       - run:
-          name: Back-end build
+          name: Back-end Build
           command: |
             cd backend
             npm install
@@ -74,21 +76,37 @@ jobs:
           paths: [backend/node_modules]
           key: backend-deps
 
-#   test-frontend:
-#     docker:
-#       # Docker image here
-#     steps:
-#       # Checkout code from git
-#       # Restore from cache
-#       # Your job code here
-                
-#   test-backend:
-#     docker:
-#       # Docker image here
-#     steps:
-#       # Checkout code from git
-#       # Restore from cache
-#       # Your job code here
+  # Test Frontend Stage #
+  test-frontend:
+    docker:
+      - image: cimg/node:13.8.0
+    steps:
+      - checkout
+      #Restoring cache for previously saved Frontend Dependancies
+      - restore_cache:
+          keys: [frontend-deps]      
+      - run:
+          name: Front-end Unit Test
+          command: |
+            cd frontend
+            npm install
+            npm test
+
+  # Test Backend Stage #         
+  test-backend:
+    docker:
+      - image: cimg/node:13.8.0
+    steps:
+      - checkout
+      #Restoring cache for previously saved Backend Dependancies
+      - restore_cache:
+          keys: [backend-deps]      
+      - run:
+          name: Back-end Unit Test
+          command: |
+            cd backend
+            npm install
+            npm test
             
 #   scan-frontend:
 #     docker:
@@ -278,10 +296,10 @@ workflows:
     jobs:
       - build-frontend
       - build-backend
-      # - test-frontend:
-      #     requires: [build-frontend]
-      # - test-backend:
-      #     requires: [build-backend]
+      - test-frontend:
+          requires: [build-frontend]
+      - test-backend:
+          requires: [build-backend]
       # - scan-backend:
       #     requires: [build-backend]
       # - scan-frontend:
