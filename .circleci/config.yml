@@ -122,7 +122,7 @@ jobs:
           command: |
             cd frontend
             npm install
-            npm audit fix --audit-level=critical
+            npm audit fix --audit-level=critical --force
             npm audit --audit-level=critical
 
   # Scan Backend Stage #               
@@ -139,8 +139,8 @@ jobs:
           command: |
             cd backend
             npm install
-            npm audit fix --audit-level=critical
-            npm audit fix --audit-level=critical
+            npm audit fix --audit-level=critical --force
+            npm audit fix --audit-level=critical --force
             npm audit --audit-level=critical
 
 # ########################## CD Pipeline ##########################
