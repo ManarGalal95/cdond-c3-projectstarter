@@ -107,22 +107,38 @@ jobs:
             cd backend
             npm install
             npm test
-            
-#   scan-frontend:
-#     docker:
-#       # Docker image here
-#     steps:
-#       # Checkout code from git
-#       # Restore from cache
-#       # Your job code here
 
-#   scan-backend:
-#     docker:
-#       # Docker image here
-#     steps:
-#       # Checkout code from git
-#       # Restore from cache
-#       # Your job code here
+  # Scan Frontend Stage #               
+  scan-frontend:
+    docker:
+      - image: cimg/node:13.8.0
+    steps:
+      - checkout
+      #Restoring cache for previously saved Frontend Dependancies
+      - restore_cache:
+          keys: [frontend-deps]  
+      - run:
+          name: Front-end Scan
+          command: |
+            cd frontend
+            npm install
+            npm audit --audit-level=critical
+
+  # Scan Backend Stage #               
+  scan-backend:
+    docker:
+      - image: cimg/node:13.8.0
+    steps:
+      - checkout
+      #Restoring cache for previously saved Frontend Dependancies
+      - restore_cache:
+          keys: [backend-deps]  
+      - run:
+          name: Back-end Scan
+          command: |
+            cd backend
+            npm install
+            npm audit --audit-level=critical
 
 # ########################## CD Pipeline ##########################
 #   deploy-infrastructure:
@@ -300,10 +316,10 @@ workflows:
           requires: [build-frontend]
       - test-backend:
           requires: [build-backend]
-      # - scan-backend:
-      #     requires: [build-backend]
-      # - scan-frontend:
-      #     requires: [build-frontend]
+      - scan-backend:
+          requires: [build-backend]
+      - scan-frontend:
+          requires: [build-frontend]
       # - deploy-infrastructure:
       #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
       #     filters:
