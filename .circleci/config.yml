@@ -27,20 +27,22 @@ commands:
             sudo apt install ansible -y
 
   #Command-3
-  #It will destroy FE & BE Stacks on Failure
-  # destroy-environment:
-  #   description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
-  #   parameters:
-  #     Workflow_ID:
-  #       type: string
-  #       default: ${CIRCLE_WORKFLOW_ID:0:7}  
-  #   steps:
-  #     - run:
-  #         name: Destroy environments
-  #         when: on_fail
-  #         command: |
-  #           # Your code here
-  #           exit 1
+  #It will destroy FE, BE Stacks, and empty S3 bucket created by FE on Failure
+  destroy-environment:
+    description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
+    parameters:
+      Workflow_ID:
+        type: string
+        default: ${CIRCLE_WORKFLOW_ID:0:7}  
+    steps:
+      - run:
+          name: Destroy environments
+          when: on_fail
+          #It will delete Backend Stack, Frontend Stack, and Empty S3 Bucket created by Frontend yml file
+          command: |
+            aws s3 rm s3://udapeople-<<parameters.Workflow_ID>> --recursive
+            aws cloudformation delete-stack --stack-name udapeople-frontend-<< parameters.Workflow_ID >>
+            aws cloudformation delete-stack --stack-name udapeople-backend-<< parameters.Workflow_ID >>
 
 #   revert-migrations:
 #     description: Revert the last migration if successfully run in the current workflow.
@@ -182,6 +184,7 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - checkout
+      - run: yum install -y tar gzip
       - run:
           name: Ensure back-end infrastructure exists
           command: |
