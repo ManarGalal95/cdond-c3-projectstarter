@@ -58,7 +58,7 @@ commands:
           # Add when this will run
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            SUCCESS = $(curl --insecure  https://kvdb.io/${KVDB_BUCKET}/migration_<< parameters.Workflow_ID >>)
+            SUCCESS=$(curl --insecure  https://kvdb.io/${KVDB_BUCKET}/migration_<< parameters.Workflow_ID >>)
             if(( $SUCCESS==1 )); 
             then
               cd ~/project/backend
@@ -259,6 +259,10 @@ jobs:
     steps:
       - checkout
       - install_awscli
+
+      #Restoring cache for previously saved Backend Dependancies
+      - restore_cache:
+          keys: [backend-deps]   
 
       - run:
           name: Run migrations
