@@ -298,6 +298,7 @@ jobs:
       # Checkout code from git
       - checkout
       - install_awscli
+      - run: yum install -y tar gzip
       #Restoring cache for previously saved Frontend Dependancies
       - restore_cache:
           keys: [frontend-deps]  
@@ -426,8 +427,8 @@ workflows:
           requires: [deploy-infrastructure]
       - run-migrations:
           requires: [configure-infrastructure]
-      # - deploy-frontend:
-      #     requires: [run-migrations]
+      - deploy-frontend:
+          requires: [run-migrations]
       # - deploy-backend:
       #     requires: [run-migrations]
       # - smoke-test:
