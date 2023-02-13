@@ -260,10 +260,6 @@ jobs:
       - checkout
       - install_awscli
 
-      #Restoring cache for previously saved Backend Dependancies
-      - restore_cache:
-          keys: [backend-deps]   
-
       - run:
           name: Run migrations
           command: |
@@ -328,22 +324,42 @@ jobs:
       - destroy-environment
       - revert-migrations             
         
-#   deploy-backend:
-#     docker:
-#       # Docker image here that supports Ansible
-#     steps:
-#       # Checkout code from git
-#       # Add ssh keys with fingerprint
-#       # attach workspace
-#       - run:
-#           name: Install dependencies
-#           command: |
-#             # your code here
-#       - run:
-#           name: Deploy backend
-#           command: |
-#             # your code here
-#       # Here's where you will add some code to rollback on failure  
+  # Deploy Backend Stage #
+
+  deploy-backend:
+    docker:
+        - image: cimg/node:13.8.0
+    steps:
+      - checkout
+      - install_awscli  
+      - install_ansible 
+      - add_ssh_keys:
+            fingerprints: 
+            - "7e:21:64:03:08:9d:2b:6d:ab:d3:a0:69:ec:c9:f1:2c"
+      - attach_workspace:
+         at: ~/
+      #Restoring cache for previously saved Backend Dependancies
+      - restore_cache:
+          keys: [backend-deps]   
+
+      - run:
+          name: Install dependencies
+          command: |
+            cd ~/project/backend
+            npm install
+
+      - run:
+          name: Deploy backend
+          command: |
+            cd ~/project/backend
+            npm run build
+            tar -czf artifact.tar.gz dist/* package*
+            cd ..
+            cp backend/artifact.tar.gz ~/project/.circleci/ansible/roles/deploy/files
+
+      # Here's where you will add some code to rollback on failure      
+      - destroy-environment
+      - revert-migrations      
 
 #   smoke-test:
 #     docker:
