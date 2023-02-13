@@ -69,6 +69,7 @@ commands:
           # Add when this will run
           command: |
             cd ~/project/backend
+            npm cache clean --force
             npm install
             npm run migration:revert
             
