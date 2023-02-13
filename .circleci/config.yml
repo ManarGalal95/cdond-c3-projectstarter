@@ -52,19 +52,25 @@ commands:
       Workflow_ID:
         type: string
         default: ${CIRCLE_WORKFLOW_ID:0:7}  
+
+            # # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
+            # SUCCESS=$(curl --insecure  https://kvdb.io/${KVDB_BUCKET}/migration_<< parameters.Workflow_ID >>)
+            # if(( $SUCCESS==1 )); 
+            # then
+            #   cd ~/project/backend
+            #   npm install
+            #   npm run migration:revert
+            # fi
     steps:
+      - restore_cache:
+          keys: [backend-deps]   
       - run:
           name: Revert migrations
           # Add when this will run
           command: |
-            # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            #SUCCESS=$(curl --insecure  https://kvdb.io/${KVDB_BUCKET}/migration_<< parameters.Workflow_ID >>)
-            #if(( $SUCCESS==1 )); 
-            #then
-              cd ~/project/backend
-              npm install
-              npm run migration:revert
-            #fi
+            cd ~/project/backend
+            npm install
+            npm run migration:revert
             
 jobs:
 
