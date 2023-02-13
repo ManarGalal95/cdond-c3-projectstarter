@@ -36,7 +36,7 @@ commands:
         default: ${CIRCLE_WORKFLOW_ID:0:7}  
     steps:
       - run:
-          name: Destroy environments
+          name: Destroy Environments
           when: on_fail
           #It will delete Backend Stack, Frontend Stack, and Empty S3 Bucket created by Frontend yml file
           command: |
@@ -52,26 +52,20 @@ commands:
       Workflow_ID:
         type: string
         default: ${CIRCLE_WORKFLOW_ID:0:7}  
-
-            # # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            # SUCCESS=$(curl --insecure  https://kvdb.io/${KVDB_BUCKET}/migration_<< parameters.Workflow_ID >>)
-            # if(( $SUCCESS==1 )); 
-            # then
-            #   cd ~/project/backend
-            #   npm install
-            #   npm run migration:revert
-            # fi
     steps:
-      - restore_cache:
-          keys: [backend-deps]   
       - run:
           name: Revert migrations
+          when: on_fail
           # Add when this will run
           command: |
-            cd ~/project/backend
-            npm cache clean --force
-            npm install
-            npm run migration:revert
+            # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
+            SUCCESS=$(curl --insecure  https://kvdb.io/${KVDB_BUCKET}/migration_<< parameters.Workflow_ID >>)
+            if(( $SUCCESS==1 )); 
+            then
+              cd ~/project/backend
+              npm install
+              npm run migration:revert
+            fi
             
 jobs:
 
@@ -275,7 +269,6 @@ jobs:
           name: Run migrations
           command: |
             cd ~/project/backend
-            npm cache clean --force
             npm install
             npm run migrations > migrations_dump.txt
             cat ~/project/backend/migrations_dump.txt
