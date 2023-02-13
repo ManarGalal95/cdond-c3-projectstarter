@@ -65,12 +65,7 @@ commands:
               npm install
               npm run migration:revert
             fi
-#  if(( $SUCCESS==1 )); 
-# then
-#   cd ~/project/backend
-#   npm install
-#   npm run migration:revert
-# fi           
+         
 jobs:
 
 ########################## CI Pipeline(Stages) ##########################
@@ -316,7 +311,8 @@ jobs:
           name: Get backend url
           command: |
             BACKEND_PUBLIC_IP=$(aws ec2 describe-instances \
-            --filters "Name=tag:Name,Values=backend-<IDENTIFIER>" \
+            --region us-east-1 \
+            --filters "Name=instance-state-name,Values=running" "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --output text)
             echo "API_URL=http://${BACKEND_PUBLIC_IP}:3030" > ~/project/frontend/.env
