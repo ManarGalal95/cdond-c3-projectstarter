@@ -60,13 +60,17 @@ commands:
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
             SUCCESS=$(curl --insecure  https://kvdb.io/${KVDB_BUCKET}/migration_<< parameters.Workflow_ID >>)
-            if(( $SUCCESS==1 )); 
-            then
+            if [ $SUCCESS==1 ] ; then
               cd ~/project/backend
               npm install
               npm run migration:revert
             fi
-            
+#  if(( $SUCCESS==1 )); 
+# then
+#   cd ~/project/backend
+#   npm install
+#   npm run migration:revert
+# fi           
 jobs:
 
 ########################## CI Pipeline(Stages) ##########################
@@ -298,7 +302,6 @@ jobs:
       # Checkout code from git
       - checkout
       - install_awscli
-      - run: yum install -y tar gzip
       #Restoring cache for previously saved Frontend Dependancies
       - restore_cache:
           keys: [frontend-deps]  
