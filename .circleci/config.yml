@@ -387,6 +387,7 @@ jobs:
       - checkout
       - install_awscli  
       - install_ansible 
+      - run: apk add --update curl
       - run:
           name: Install dependencies
           command: |
