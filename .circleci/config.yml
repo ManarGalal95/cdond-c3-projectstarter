@@ -427,7 +427,7 @@ jobs:
       - destroy-environment
       - revert-migrations   
 
-  # Cloudfront Update to New Bucket Version (Green Version) #
+  # Cloudfront Update to New Bucket Version (Green Version) Stage #
 
   cloudfront-update:
     docker:
@@ -459,7 +459,9 @@ jobs:
       - destroy-environment
       - revert-migrations 
 
-cleanup:
+# Cleanup Stage #
+
+  cleanup:
     docker:
         - image: cimg/node:13.8.0
 
