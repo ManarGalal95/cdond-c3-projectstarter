@@ -487,7 +487,7 @@ jobs:
                 --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
             echo Stack Names: "${STACKS[@]}"
 
-            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
+            if [[ "${CIRCLE_WORKFLOW_ID}" != "${OldWorkflowID}" ]]
             then
               echo "Cleanup Job began..."
               aws s3 rb s3://udapeople-${OldWorkflowID} --force
