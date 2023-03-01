@@ -1,0 +1,6 @@
+[URL01]: A public git repository with your project code.
+
+https://github.com/ManarGalal95/cdond-c3-projectstarter
+
+[URL02]: Deployed and Functioning Front-end Application in an S3 Bucket
+
